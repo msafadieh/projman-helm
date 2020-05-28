@@ -1,0 +1,8 @@
+  
+apiVersion: v2
+name: projman
+description: PVC for shared filesystem within a CloudMan project
+type: application
+version: 0.1.0
+appVersion: 0.3.0
+
