@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ .Release.Name }}-pvc
+  name: {{ .Values.persistence.name }}-pvc
   labels:
     app.kubernetes.io/name: {{ include "projman.name" . }}
     helm.sh/chart: {{ include "projman.chart" . }}
