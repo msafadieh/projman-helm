@@ -2,7 +2,6 @@ nameOverride: ""
 fullnameOverride: ""
 
 persistence:
-  name: "initialpvc"
   annotations: {}
   storageClass: "nfs"
   accessMode: "ReadWriteMany"
