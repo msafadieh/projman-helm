@@ -1,9 +1,47 @@
 nameOverride: ""
 fullnameOverride: ""
 
-persistence:
-  name: "initial"
-  annotations: {}
-  storageClass: "nfs"
-  accessMode: "ReadWriteMany"
-  size: 50Gi
+data:
+  scratch:
+    name: "initial-scratch"
+    annotations: {}
+    storageClass: "nfs"
+    accessMode: "ReadWriteMany"
+    size: 50Gi
+  persistent:
+    name: "initial-persistent"
+    annotations: {}
+    storageClass: "rclone"
+    accessMode: "ReadWriteMany"
+    size: 50Gi
+    persistentVolume:
+      annotations: {}
+      extraSpec:
+        csi:
+          driver: csi-rclone
+          volumeHandle: "{{ .Values.data.persistent.name }}-pv"
+          volumeAttributes:
+            remote: "s3"
+            remotePathSuffix: "/initial"
+            file-perms: "0777"
+            links: "true"
+            vfs-cache-mode: "full"
+  public:
+    name: "initial-public"
+    annotations: {}
+    storageClass: "rclone"
+    accessMode: "ReadWriteMany"
+    size: 50Gi
+    persistentVolume:
+      annotations: {}
+      extraSpec:
+        csi:
+          driver: csi-rclone
+          volumeHandle: "{{ .Values.data.public.name }}-pv"
+          volumeAttributes:
+            remote: "s3"
+            remotePathSuffix: "/public"
+            file-perms: "0777"
+            links: "true"
+            vfs-cache-mode: "full"
+
