@@ -1,15 +1,11 @@
 nameOverride: ""
 fullnameOverride: ""
 
+projectName: "initial"
+
 data:
-  scratch:
-    name: "initial-scratch"
-    annotations: {}
-    storageClass: "nfs"
-    accessMode: "ReadWriteMany"
-    size: 50Gi
-  persistent:
-    name: "initial-persistent"
+  project:
+    name: "initial-project-data"
     annotations: {}
     storageClass: "rclone"
     accessMode: "ReadWriteMany"
@@ -27,7 +23,7 @@ data:
             links: "true"
             vfs-cache-mode: "full"
   public:
-    name: "initial-public"
+    name: "initial-public-data"
     annotations: {}
     storageClass: "rclone"
     accessMode: "ReadWriteMany"
@@ -45,3 +41,6 @@ data:
             links: "true"
             vfs-cache-mode: "full"
 
+configs:
+  jupyter_notebook_config.py: |
+    c.NotebookApp.notebook_dir = '/gvl/'
