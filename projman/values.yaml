@@ -1,9 +1,46 @@
 nameOverride: ""
 fullnameOverride: ""
 
-persistence:
-  name: "initial"
-  annotations: {}
-  storageClass: "nfs"
-  accessMode: "ReadWriteMany"
-  size: 50Gi
+projectName: "initial"
+
+data:
+  project:
+    name: "initial-project-data"
+    annotations: {}
+    storageClass: "rclone"
+    accessMode: "ReadWriteMany"
+    size: 50Gi
+    persistentVolume:
+      annotations: {}
+      extraSpec:
+        csi:
+          driver: csi-rclone
+          volumeHandle: "{{ .Values.data.persistent.name }}-pv"
+          volumeAttributes:
+            remote: "s3"
+            remotePathSuffix: "/initial"
+            file-perms: "0777"
+            links: "true"
+            vfs-cache-mode: "full"
+  public:
+    name: "initial-public-data"
+    annotations: {}
+    storageClass: "rclone"
+    accessMode: "ReadWriteMany"
+    size: 50Gi
+    persistentVolume:
+      annotations: {}
+      extraSpec:
+        csi:
+          driver: csi-rclone
+          volumeHandle: "{{ .Values.data.public.name }}-pv"
+          volumeAttributes:
+            remote: "s3"
+            remotePathSuffix: "/public"
+            file-perms: "0777"
+            links: "true"
+            vfs-cache-mode: "full"
+
+configs:
+  jupyter_notebook_config.py: |
+    c.NotebookApp.notebook_dir = '/gvl/'
