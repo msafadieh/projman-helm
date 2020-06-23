@@ -17,7 +17,6 @@ data:
           driver: csi-rclone
           volumeHandle: "{{ .Values.data.persistent.name }}-pv"
           volumeAttributes:
-            remote: "s3"
             remotePathSuffix: "/initial"
             file-perms: "0777"
             links: "true"
@@ -35,7 +34,6 @@ data:
           driver: csi-rclone
           volumeHandle: "{{ .Values.data.public.name }}-pv"
           volumeAttributes:
-            remote: "s3"
             remotePathSuffix: "/public"
             file-perms: "0777"
             links: "true"
