@@ -3,42 +3,46 @@ fullnameOverride: ""
 
 projectName: "initial"
 
-data:
-  project:
-    name: "initial-project-data"
-    annotations: {}
-    storageClass: "rclone"
-    accessMode: "ReadWriteMany"
-    size: 50Gi
-    persistentVolume:
-      annotations: {}
-      extraSpec:
-        csi:
-          driver: csi-rclone
-          volumeHandle: "{{ .Values.data.persistent.name }}-pv"
-          volumeAttributes:
-            remotePathSuffix: "/initial"
-            file-perms: "0777"
-            links: "true"
-            vfs-cache-mode: "full"
-  public:
-    name: "initial-public-data"
-    annotations: {}
-    storageClass: "rclone"
-    accessMode: "ReadWriteMany"
-    size: 50Gi
-    persistentVolume:
-      annotations: {}
-      extraSpec:
-        csi:
-          driver: csi-rclone
-          volumeHandle: "{{ .Values.data.public.name }}-pv"
-          volumeAttributes:
-            remotePathSuffix: "/public"
-            file-perms: "0777"
-            links: "true"
-            vfs-cache-mode: "full"
+data: {}
+  # project:
+  #   name: "initial-project-data"
+  #   annotations: {}
+  #   storageClass: "rclone"
+  #   accessMode: "ReadWriteMany"
+  #   size: 50Gi
+  #   persistentVolume:
+  #     annotations: {}
+  #     extraSpec:
+  #       csi:
+  #         driver: csi-rclone
+  #         volumeHandle: "{{ .Values.data.persistent.name }}-pv"
+  #         volumeAttributes:
+  #           remotePathSuffix: "/initial"
+  #           file-perms: "0777"
+  #           links: "true"
+  #           vfs-cache-mode: "full"
+  # public:
+  #   name: "initial-public-data"
+  #   annotations: {}
+  #   storageClass: "rclone"
+  #   accessMode: "ReadWriteMany"
+  #   size: 50Gi
+  #   persistentVolume:
+  #     annotations: {}
+  #     extraSpec:
+  #       csi:
+  #         driver: csi-rclone
+  #         volumeHandle: "{{ .Values.data.public.name }}-pv"
+  #         volumeAttributes:
+  #           remotePathSuffix: "/public"
+  #           file-perms: "0777"
+  #           links: "true"
+  #           vfs-cache-mode: "full"
 
-configs:
-  jupyter_notebook_config.py: |
-    c.NotebookApp.notebook_dir = '/gvl/'
+configs: {}
+  # jupyter_notebook_config.py: |
+  #   c.NotebookApp.notebook_dir = '/gvl/'
+
+secrets: {}
+  # db-password: changeme
+  # db-username: nextcloud
