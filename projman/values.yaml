@@ -42,7 +42,139 @@ data: {}
 configs: {}
   # jupyter_notebook_config.py: |
   #   c.NotebookApp.notebook_dir = '/gvl/'
+  # update_keycloak.sh: |
+  #   #!/bin/sh
+
+  #   # abort if any command fails
+  #   set -e
+  #   username="admin"
+  #   # KEYCLOAK_HTTP_PASSWORD="injectme"
+  #   # CLIENT_ID="injectme"
+  #   # REDIRECT_URIS="injectme"
+  #   # CLIENT_SECRET="injectme"
+  #   # KC_URL="injectme"
+
+  #   # get auth token
+  #   token=$(curl -k -s -d "client_id=admin-cli" -d "username=$username" -d "password=$KEYCLOAK_HTTP_PASSWORD" -d "grant_type=password" \
+  #          "$KC_URL/realms/master/protocol/openid-connect/token" | jq -r '.access_token')
+
+  #   # Get ID for new browser flow
+  #   flowid=$(curl -X GET -k -s -H "Content-Type: application/json" -H "Authorization: bearer $token" "$KC_URL/admin/realms/master/authentication/flows" | jq -r '.[] | select(.alias=="BrowserFlowWithRoleRestrictions") | .id')
+
+  #   project_client=$(curl -k -s -H "Content-Type: application/json" -H "Authorization: bearer $token" "$KC_URL/admin/realms/master/clients" | \
+  #   jq --arg CLIENT_ID "$CLIENT_ID" -r '.[] | select(.clientId==$CLIENT_ID)')
+
+  #   if [ -z "$project_client" ]
+  #   then
+  #         project_client=$(cat <<EOF
+  #   {
+  #       "clientId": "$CLIENT_ID",
+  #       "enabled": true,
+  #       "clientAuthenticatorType": "client-secret",
+  #       "authenticationFlowBindingOverrides":
+  #       {
+  #         "browser": "$flowid"
+  #       },
+  #       "redirectUris": ["$REDIRECT_URIS"],
+  #       "publicClient": false,
+  #       "secret": "$CLIENT_SECRET",
+  #       "protocol": "openid-connect",
+  #       "fullScopeAllowed": true,
+  #       "protocolMappers": [
+  #           {
+  #               "name": "$CLIENT_ID-audience",
+  #               "protocol": "openid-connect",
+  #               "protocolMapper": "oidc-audience-mapper",
+  #               "consentRequired": false,
+  #               "config": {
+  #                   "included.client.audience": "$CLIENT_ID",
+  #                   "id.token.claim": "false",
+  #                   "access.token.claim": "true"
+  #               }
+  #           }
+  #       ]
+  #   }
+  #   EOF
+  #         )
+
+  #         # add new client
+  #         curl -k -X POST -H "Content-Type: application/json" -H "Authorization: bearer $token" "$KC_URL/admin/realms/master/clients" -d "$project_client"
+  #         clientuuid=$(curl -k -s -H "Content-Type: application/json" -H "Authorization: bearer $token" "$KC_URL/admin/realms/master/clients" | jq --arg CLIENT_ID "$CLIENT_ID" -r '.[] | select(.clientId==$CLIENT_ID) | .id')
+  #         roledata=$(cat <<EOF
+  #   {
+  #       "name": "$CLIENT_ID"
+  #   }
+  #   EOF
+  #         )
+  #         curl -k -X POST -H "Content-Type: application/json" -H "Authorization: bearer $token" "$KC_URL/admin/realms/master/clients/$clientuuid/roles" -d "$roledata"
+  #         roleid=$(curl -k -X GET -H "Content-Type: application/json" -H "Authorization: bearer $token" "$KC_URL/admin/realms/master/clients/$clientuuid/roles" | jq --arg CLIENT_ID "$CLIENT_ID" -r '.[] | select(.name==$CLIENT_ID) | .id')
+
+
+  #         userdata=$(cat <<EOF
+  #   {
+  #       "enabled":true,
+  #       "attributes":{},
+  #       "username":"$CLIENT_ID",
+  #       "emailVerified":"",
+  #       "email":"$CLIENT_ID@gvl.org",
+  #       "firstName":"$CLIENT_ID",
+  #       "lastName":"$CLIENT_ID"
+  #   }
+  #   EOF
+  #         )
+
+  #         # Create user for this project
+  #         curl -k -X POST -H "Content-Type: application/json" -H "Authorization: bearer $token" "$KC_URL/admin/realms/master/users" -d "$userdata"
+
+  #         useruuid=$(curl -k -s -H "Content-Type: application/json" -H "Authorization: bearer $token" "$KC_URL/admin/realms/master/users" | jq --arg CLIENT_ID "$CLIENT_ID" -r '.[] | select(.username==$CLIENT_ID) | .id')
+
+  #         curl -k -X PUT -H "Content-Type: application/json" -H "Authorization: bearer $token" "$KC_URL/admin/realms/master/users/$useruuid/reset-password" -d "{\"type\":\"password\",\"value\":\"changeme\",\"temporary\":true}"
+        
+  #         rolemapping=$(cat <<EOF
+  #   [{
+  #     "id": "$roleid",
+  #     "name": "$CLIENT_ID",
+  #     "composite": false,
+  #     "clientRole": true,
+  #     "containerId": "$clientuuid"
+  #   }]
+  #   EOF
+  #         )
+
+  #         curl -k -X POST -H "Content-Type: application/json" -H "Authorization: bearer $token" "$KC_URL/admin/realms/master/users/$useruuid/role-mappings/clients/$clientuuid" -d "$rolemapping"
+  #   else
+  #         echo "The $CLIENT_ID client already exists."
+  #   fi
+
 
 secrets: {}
   # db-password: changeme
   # db-username: nextcloud
+
+jobs: {}
+  # keycloak:
+  #   - name: kecyloak-projman-job
+  #     image: "gempesaw/curl-jq"
+  #     command: ["/bin/sh", "/kc-init/update_keycloak.sh"]
+  #     volumeMounts:
+  #       - name: kc-init
+  #         mountPath: /kc-init
+  #         readOnly: true
+  #     env:
+  #       - name: CLIENT_ID
+  #         value: "initial"
+  #       - name: KEYCLOAK_HTTP_PASSWORD
+  #         value: "changeme"
+  #       - name: REDIRECT_URIS
+  #         value: "https://example.org/*"
+  #       - name: CLIENT_SECRET
+  #         value: "randomizeme"
+  #       - name: KC_URL
+  #         value: "https://example.org/auth"
+  #     volumes:
+  #       - name: kc-init
+  #         configMap:
+  #           name: initial-projman-configs
+  #           items:
+  #             - key: "update_keycloak.sh"
+  #               path: "update_keycloak.sh"
