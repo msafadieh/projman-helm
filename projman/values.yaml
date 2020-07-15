@@ -153,28 +153,29 @@ secrets: {}
 
 jobs: {}
   # keycloak:
-  #   - name: kecyloak-projman-job
-  #     image: "gempesaw/curl-jq"
-  #     command: ["/bin/sh", "/kc-init/update_keycloak.sh"]
-  #     volumeMounts:
-  #       - name: kc-init
-  #         mountPath: /kc-init
-  #         readOnly: true
-  #     env:
-  #       - name: CLIENT_ID
-  #         value: "initial"
-  #       - name: KEYCLOAK_HTTP_PASSWORD
-  #         value: "changeme"
-  #       - name: REDIRECT_URIS
-  #         value: "https://example.org/*"
-  #       - name: CLIENT_SECRET
-  #         value: "randomizeme"
-  #       - name: KC_URL
-  #         value: "https://example.org/auth"
-  #     volumes:
-  #       - name: kc-init
-  #         configMap:
-  #           name: initial-projman-configs
-  #           items:
-  #             - key: "update_keycloak.sh"
-  #               path: "update_keycloak.sh"
+  #   volumes:
+  #     - name: kc-init
+  #       configMap:
+  #         name: initial-projman-configs
+  #         items:
+  #           - key: "update_keycloak.sh"
+  #             path: "update_keycloak.sh"
+  #   containers:
+  #     - name: kecyloak-projman-job
+  #       image: "gempesaw/curl-jq"
+  #       command: ["/bin/sh", "/kc-init/update_keycloak.sh"]
+  #       volumeMounts:
+  #         - name: kc-init
+  #           mountPath: /kc-init
+  #           readOnly: true
+  #       env:
+  #         - name: CLIENT_ID
+  #           value: "initial"
+  #         - name: KEYCLOAK_HTTP_PASSWORD
+  #           value: "changeme"
+  #         - name: REDIRECT_URIS
+  #           value: "https://example.org/*"
+  #         - name: CLIENT_SECRET
+  #           value: "randomizeme"
+  #         - name: KC_URL
+  #           value: "https://example.org/auth"
