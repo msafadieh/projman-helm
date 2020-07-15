@@ -1,0 +1,22 @@
+{{ range $name, $entry := .Values.jobs -}}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ $.Release.Name }}-{{ $name }}-job
+  labels:
+    app.kubernetes.io/name: {{ include "projman.name" $ }}
+    helm.sh/chart: {{ include "projman.chart" $ }}
+    app.kubernetes.io/instance: {{ $.Release.Name }}
+    app.kubernetes.io/managed-by: {{ $.Release.Service }}
+spec:
+  backoffLimit: 10
+  template:
+    spec:
+      restartPolicy: Never
+      volumes:
+        {{- $entry.volumes | toYaml | nindent 8 }}
+      containers:
+        {{- $entry.containers | toYaml | nindent 8 }}
+      
+---
+{{- end }}
